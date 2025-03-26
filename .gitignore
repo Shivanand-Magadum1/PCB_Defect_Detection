@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+*.log
+
+# Virtual environment
+venv/
+.env
+
+# FastAPI logs
+logs/
+*.log
+
+# Environment variables
+.env
+
+# Python package dependencies
+*.egg-info/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.swp
+*.swo
+.DS_Store
+
+# Compiled files
+*.o
+*.pyc
+
+# Model files
+*.pt
+
+# Docker
+dockerfile
+
+# VS Code and JetBrains IDEs
+.vscode/
+.idea/
+*.iml
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Output and generated files
+output/

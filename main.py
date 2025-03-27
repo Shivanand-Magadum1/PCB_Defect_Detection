@@ -5,14 +5,11 @@ from app.api.pcb_controller import pcb_router
 from app.config.EnvConfig import EnvConfig
 from app.config.logging_config import setup_logger
 
-# Setup logger
 setup_logger()
 logger = logging.getLogger("PCB-Defect-Detection")
 
-# Initialize FastAPI app
 app = FastAPI(title="PCB Defect Detection API", version="1.0")
 
-# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,10 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API Route Prefix
 api_prefix = f"{EnvConfig.BASE_PATH}/api/v1"
-
-# Include Router
 app.include_router(pcb_router, prefix=api_prefix, tags=["PCB Defect Detection"])
 
 @app.get("/")

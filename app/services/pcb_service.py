@@ -1,15 +1,15 @@
 import logging
-from app.helpers.model_helper import ModelLoader
+import os
+import tempfile
+import cv2
 from fastapi import HTTPException
+from app.helpers.model_helper import ModelLoader
 
 logger = logging.getLogger("PCB-Defect-Detection")
 
-# Load model
 model_loader = ModelLoader()
 
 class PCBService:
-    """Handles PCB defect detection logic and delegates processing to the model helper."""
-
     @staticmethod
     def predict_image(file):
         try:
@@ -17,23 +17,21 @@ class PCBService:
             if not image_stream:
                 raise HTTPException(status_code=404, detail="No output generated for image")
             return image_stream, mime_type
-        except HTTPException:
-            raise
         except Exception as e:
-            error_text = "Error in processing image"
-            logger.error(f"{error_text}: {str(e)}", exc_info=True)
-            raise HTTPException(status_code=500, detail=f"{error_text}: {str(e)}")
+            logger.error(f"Error in processing image: {str(e)}", exc_info=True)
+            raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
 
     @staticmethod
-    def predict_video(file):
+    async def predict_video(file, output_path):
         try:
-            video_stream, mime_type = model_loader.process_video(file)
-            if not video_stream:
-                raise HTTPException(status_code=404, detail="No output generated for video")
-            return video_stream, mime_type
-        except HTTPException:
-            raise
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
+                temp_video.write(await file.read())
+                temp_video_path = temp_video.name
+
+            output_video = model_loader.process_video(temp_video_path, output_path)
+
+            os.remove(temp_video_path)
+            return output_video
         except Exception as e:
-            error_text = "Error in processing video"
-            logger.error(f"{error_text}: {str(e)}", exc_info=True)
-            raise HTTPException(status_code=500, detail=f"{error_text}: {str(e)}")
+            logger.error(f"Failed to process video: {str(e)}", exc_info=True)
+            raise HTTPException(status_code=500, detail=f"Failed to process video: {str(e)}")
